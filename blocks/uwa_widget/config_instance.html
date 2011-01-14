@@ -1,0 +1,52 @@
+<?php 
+require_once ($CFG->dirroot . '/blocks/uwa_widget/lib/uwawidget.php');
+$uwawidget=new uwawidget();
+
+if(isset($this->config->moduleUrl)) {
+  	$uwawidget->setModuleUrl($this->config->moduleUrl);
+}
+if(isset($this->config->configuration)) {
+  	$uwawidget->setConfiguration($this->config->configuration);  	
+}
+if(isset($this->config->preferences)) {
+  	$uwawidget->setPreferences($this->config->preferences);  	
+}
+
+$settingshtml['general']=$uwawidget->getSettingsHTML('general');
+$settingshtml['configuration']=$uwawidget->getSettingsHTML('configuration');
+
+$prefs=$uwawidget->getSettingsHTML('preferences');
+
+if(isset($this->config->moduleUrl) && $prefs) {
+	$settingshtml['preferences']=$prefs;
+}
+
+ 
+// Show Hidden fields
+foreach($settingshtml as $section => $fields) {
+	if(isset($fields['hidden'])) {
+		foreach($fields['hidden'] as $hiddenfield) {
+			echo $hiddenfield;
+		}		
+		unset($settingshtml[$section]['hidden']);
+	}	
+}
+?>
+<table cellpadding="9" cellspacing="0">
+<?php
+  foreach($settingshtml as $section => $setting) {
+	echo '<tr>'."\n";
+	echo '  <td colspan="2">'."\n";
+	echo '  <b>'.get_string($section, 'block_uwa_widget').'</b></td>'."\n";  	
+	echo '</tr>'."\n";
+	foreach($setting as $label=>$html) {
+		echo '<tr valign="top">'."\n";
+  		echo '<td align="right">'.$label.':</td>'."\n";
+  		echo '<td>'.$html.'</td>'."\n";
+		echo '</tr>'."\n";		
+	}	
+  }
+?>
+<tr>
+    <td colspan="2" align="center"><input type="submit" value="<?php print_string("savechanges") ?>" /></td></tr>
+</table>

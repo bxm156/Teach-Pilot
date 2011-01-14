@@ -1,0 +1,27 @@
+<?php 
+require_once("../config.php");
+$course_id = optional_param('id', 0, PARAM_INT);
+?>
+<link rel="STYLESHEET" href="<?php p($CFG->wwwroot) ?>/mod/voicetools/css/StyleSheet.css" type="text/css" />
+
+<div class="content general_font" id=content style="width:700px;background-color:white;margin:0 auto;border: solid 1px #D9DEE5;" align="center">
+        <input type="hidden" value="" name="type"> 
+        <input type="hidden" value="" name="activity"> 
+        <div class="headerBar">
+            <div class="headerBarLeft" >
+                <span>Wimba</span>
+            </div>
+        </div>
+        <div id="activity" style="width=700px;height:350px;padding-top: 20px" align="left">
+            <p style="padding-left:10px;padding-top:100px;font-size:11pt">
+            This choice is not available. Please report the issue to your system administrator.
+            <br><br>
+            Please choose a Wimba Voice feature from the Activity list: Voice Authoring, Voice Board, Voice E-mail, Voice Podcaster, or Voice Presentation.  
+            <p>
+       </div>
+          <div align="center" style="border-top:1px solid; background-color:#F0F0F0;width:700px;height:25px">
+                <ul class="regular_btn_list" style="float:right;padding-top:2px">
+                    <li><a href="<?php echo $CFG->wwwroot;?>/course/view.php?id=<?php p($course_id)?>"  class="regular_btn"><span>Ok</span></a></li>
+                </ul>                      
+            </div>      
+</div>

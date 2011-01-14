@@ -1,0 +1,125 @@
+<!-- 
+///////////////////////////////////////////////////////////////////////////
+//                                                                       //
+// NOTICE OF COPYRIGHT                                                   //
+//                                                                       //
+//                                                                       //
+// Copyright (C) 2010 Dual Code Inc. (www.dualcode.com)                  //
+//                                                                       //
+// This program is free software; you can redistribute it and/or modify  //
+// it under the terms of the GNU General Public License version 2 as     //
+// published by the Free Software Foundation.                            //
+//                                                                       //
+// This program is distributed in the hope that it will be useful,       //
+// but WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         //
+// GNU General Public License for more details:                          //
+//                                                                       //
+// http://www.gnu.org/licenses/old-licenses/gpl-2.0.html                 //
+//                                                                       //
+///////////////////////////////////////////////////////////////////////////
+-->
+
+<script language="javascript">
+function disableFields() {
+  if (document.form.wc_provider[0].checked) {
+	  document.form.wc_serverhost.disabled = false;
+	  document.form.wc_securitysalt.disabled = false;
+	  document.form.wc_meetingrooms.disabled = false;
+	  document.form.wc_accountid.disabled = true;
+	  document.form.wc_accountpwd.disabled = true;
+	  
+  }
+  else {
+	  document.form.wc_serverhost.disabled = true;
+	  document.form.wc_securitysalt.disabled = true;
+	  document.form.wc_meetingrooms.disabled = true;
+	  document.form.wc_accountid.disabled = false;
+	  document.form.wc_accountpwd.disabled = false;	  
+  }
+}
+
+function unmaskPassword(id) {
+  var pw = document.getElementById(id);
+  var chb = document.getElementById(id+'unmask');
+
+  try {
+    // first try IE way - it can not set name attribute later
+    if (chb.checked) {
+      var newpw = document.createElement('<input type="text" name="'+pw.name+'">');
+    } else {
+      var newpw = document.createElement('<input type="password" name="'+pw.name+'">');
+    }
+    newpw.attributes['class'].nodeValue = pw.attributes['class'].nodeValue;
+  } catch (e) {
+    var newpw = document.createElement('input');
+    newpw.setAttribute('name', pw.name);
+    if (chb.checked) {
+      newpw.setAttribute('type', 'text');
+    } else {
+      newpw.setAttribute('type', 'password');
+    }
+    newpw.setAttribute('class', pw.getAttribute('class'));
+  }
+  newpw.id = pw.id;
+  newpw.size = pw.size;
+  newpw.onblur = pw.onblur;
+  newpw.onchange = pw.onchange;
+  newpw.value = pw.value;
+  newpw.disabled = pw.disabled;
+  pw.parentNode.replaceChild(newpw, pw);
+}
+</script>
+
+<?php
+$self = 1;
+if($CFG->wc_provider=="dualcode") {
+  $self = 0;
+}
+?>
+
+<form method="post" action="module.php" name="form">
+  <input type="hidden" name="sesskey" value="<?php echo $USER->sesskey ?>">
+  <table cellpadding="9" cellspacing="0">
+  <tr valign="top">
+    <td align="left" colspan="3">
+      <input type="radio" name="wc_provider" value="self" <?php if($self) {echo "checked=\"checked\"";} ?> onchange="disableFields()" />
+      <strong><?php print_string("config_hostmyself", 'bigbluebutton') ?></strong>
+    </td>
+  </tr> 
+  <tr valign="top">
+    <td align="right" width="150px;"><?php print_string("http", 'bigbluebutton') ?></td>
+    <td align="left" width="300px"><input name="wc_serverhost" type="text" size="50" value="<?php p($CFG->wc_serverhost) ?>" <?php if(!$self) {echo "disabled=\"disabled\"";} ?> /></td>
+    <td align="left" width="*"><?php print_string("config_server", 'bigbluebutton') ?></td>
+  </tr>
+  <tr valign="top">
+    <td align="right"><?php print_string("securitysalt", 'bigbluebutton') ?></td>
+    <td align="left"><input name="wc_securitysalt" type="text" size="50" value="<?php p($CFG->wc_securitysalt) ?>" <?php if(!$self) {echo "disabled=\"disabled\"";} ?> /></td>
+    <td><?php print_string("config_salt", 'bigbluebutton') ?></td>
+  </tr>
+  <tr valign="top">
+    <td align="right"><?php print_string("meetingrooms", 'bigbluebutton') ?></td>
+    <td align="left"><input name="wc_meetingrooms" type="text" size="50" value="<?php p($CFG->wc_meetingrooms) ?>" <?php if(!$self) {echo "disabled=\"disabled\"";} ?> /></td>
+    <td align="left"><?php print_string("config_meetingrooms", 'bigbluebutton') ?></td>
+  </tr>
+  <tr valign="top">
+    <td align="left" colspan="3">
+      <input type="radio" name="wc_provider" value="dualcode" <?php if(!$self) {echo "checked=\"checked\"";} ?> onchange="disableFields()" />
+      <strong><?php print_string("config_hostbydualcode", 'bigbluebutton') ?></strong>
+    </td>
+  </tr> 
+  <tr valign="top">
+    <td align="right" width="150px;"><?php print_string("accountid", 'bigbluebutton') ?></td>
+    <td align="left" width="300px"><input name="wc_accountid" type="text" size="50" value="<?php p($CFG->wc_accountid) ?>" <?php if($self) {echo "disabled=\"disabled\"";} ?> /></td>
+    <td align="left" width="*">&nbsp;</td>
+  </tr>
+  <tr valign="top">
+    <td align="right"><?php print_string("accountpwd", 'bigbluebutton') ?></td>
+    <td align="left"><input name="wc_accountpwd" id="id_accountpwd" type="password" size="50" value="<?php p($CFG->wc_accountpwd) ?>"  <?php if($self) {echo "disabled=\"disabled\"";} ?> /> </td>
+    <td><input id="id_accountpwdunmask" value="1" type="checkbox" onclick="unmaskPassword('id_accountpwd')"/>Unmask</td>
+  </tr>
+  <tr>
+    <td align="center" colspan="3"><input type="submit" value="<?php print_string("savechanges") ?>" /></td>
+  </tr>
+  </table>
+</form>

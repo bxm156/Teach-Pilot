@@ -1,0 +1,209 @@
+<!--//* Moodle Google - Moogle block version 2007101509 Instance Configuration.
+* 
+* Developer: Yajuvendrasinh V Mahida <yaju_mahida@yahoo.com>
+* 
+* This block is free software. you can redistribute it and/or modify it.
+*                                                                        -->
+
+<!-- Dependencies for YUI Library--> 
+    
+<!-- Sam Skin CSS for TabView --> 
+    <link rel="stylesheet" type="text/css" href="<?php
+echo $CFG->wwwroot; ?>/lib/yui/tabview/assets/skins/sam/tabview.css"> 
+                                                                         
+<link rel="stylesheet" type="text/css" href="<?php
+echo $CFG->wwwroot; ?>/lib/yui/fonts/fonts-min.css"> 
+                              
+<!-- JavaScript Dependencies for Tabview: --> 
+    <script type="text/javascript" src="<?php
+echo $CFG->wwwroot; ?>/lib/yui/yahoo-dom-event/yahoo-dom-event.js">
+    </script> 
+    
+    <script type="text/javascript" src="<?php
+echo $CFG->wwwroot; ?>/lib/yui/element/element-beta-min.js">
+    </script> 
+     
+<!-- OPTIONAL: Connection (required for dynamic loading of data) --> 
+    <script type="text/javascript" src="<?php
+echo $CFG->wwwroot; ?>/lib/yui/connection/connection-min.js"></script> 
+     
+<!-- Source file for TabView --> 
+    <script type="text/javascript" src="<?php
+echo $CFG->wwwroot; ?>/lib/yui/tabview/tabview-min.js"></script>  
+
+    <script type="text/javascript"> 
+    var myTabs = new YAHOO.widget.TabView("Tabbed_Config"); 
+    </script>  
+    
+     
+<!-- Drawing the Three Tabs -->
+    <br>
+    <div id="Tabbed_Config" class="yui-navset"> 
+    <center> <ul class="yui-nav"> 
+             <li class="selected"><a href="#tab1"><em>|| Set Search Parameters || </em></a></li> 
+             <li><a href="#tab2"><em>|| Set User Defined Website || </em></a></li> 
+             <li><a href="#tab3"><em>|| Set Search Result Parameters ||</em></a></li></ul><br><br>
+    </center>             
+    
+<!-- Defining Data for the three Tabs -->
+    
+    <div class="yui-content"> 
+    
+    <!-- Tab 1 Set Search Parameters -->
+    
+    <div>
+    
+    <!--  ********************** The following code is for Google Search Options **********************  --> 
+    <table cellpadding="16" cellspacing="0">
+    
+    <tr valign="top">
+    <td  ALIGN="left"><b><?php print_string("search_options", "block_moodle_google") ?></b> &nbsp;<a title="Help with Google Search Services (new window)" href="help.php?module=moodle_google_help&amp;file=ic_srch_fltrs.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_srch_fltrs.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=910,height=700', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td> 
+
+    <td>
+    <input name="localsearch_value" type="hidden"  value="0" /><b>:</b>
+    <input name="localsearch_value" type="checkbox" id="localsearch_value" <?php if(!empty($this->config->localsearch_value)) echo 'checked="checked"'; ?> /> Local Search
+ 
+    <input name="websearch_value" type="hidden"  value="0" />&nbsp;
+    <input name="websearch_value" type="checkbox" id="websearch_value" <?php if(!empty($this->config->websearch_value)) echo 'checked="checked"'; ?> /> Web Search
+ 
+    <input name="imagesearch_value" type="hidden"  value="0" />&nbsp;
+    <input name="imagesearch_value" type="checkbox" id="imagesearch_value" <?php if(!empty($this->config->imagesearch_value)) echo 'checked="checked"'; ?> /> Image Search
+
+
+    <input name="videosearch_value" type="hidden"  value="0" />&nbsp;
+    <input name="videosearch_value" type="checkbox" id="videosearch_value" <?php if(!empty($this->config->videosearch_value)) echo 'checked="checked"'; ?> /> Video Search
+
+    <br>
+    <br>
+                                                    
+    <input name="newssearch_value" type="hidden"  value="0" />&nbsp;
+    <input name="newssearch_value" type="checkbox" id="newssearch_value" <?php if(!empty($this->config->newssearch_value)) echo 'checked="checked"'; ?> /> News Search
+
+    <input name="booksearch_value" type="hidden"  value="0" />&nbsp;
+    <input name="booksearch_value" type="checkbox" id="booksearch_value" <?php if(!empty($this->config->booksearch_value)) echo 'checked="checked"'; ?> /> Book Search
+
+    <input name="blogsearch_value" type="hidden"  value="0" />&nbsp;
+    <input name="blogsearch_value" type="checkbox" id="blogsearch_value" <?php if(!empty($this->config->blogsearch_value)) echo 'checked="checked"'; ?> /> Blog Search
+    
+    <input name="usersitesearch_value" type="hidden"  value="0" />&nbsp;&nbsp;&nbsp;
+    <input name="usersitesearch_value" type="checkbox" id="usersitesearch_value" <?php if(!empty($this->config->usersitesearch_value)) echo 'checked="checked"'; ?> /> User Defined Website
+    </td>
+
+    </tr>
+    <!--  ********************** End of code for Google Search Options **********************  --> 
+
+    <!--  ********************** The following code is for Google's Default Search String **********************  -->
+    <tr valign="top">
+
+    <td  ALIGN="left"><b><?php print_string("def_search_string", "block_moodle_google") ?></b> &nbsp;<a title="Help with Default Search String (new window)" href="help.php?module=moodle_google_help&amp;file=ic_def_srch_string.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_def_srch_string.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=700,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>  
+
+    <td><b>:</b> <input name="block_moodle_google_search_string" type="text" size="26" value= "<?php if(!empty($this->config->block_moodle_google_search_string)) {p($this->config->block_moodle_google_search_string); } ?>">
+    </td>
+
+    </tr>
+    <!--  ********************** End of code for Google's Default Search String **********************  -->
+
+    <!--  ********************** Code for Google Local Search Center Point **********************  -->
+    <tr valign="top">
+
+    <td align="left"><b><?php print_string('local_search_point', 'block_moodle_google'); ?></b> &nbsp;<a title="Help with Local Search Center Point (new window)" href="help.php?module=moodle_google_help&amp;file=ic_lcl_srch_cntrpoint.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_lcl_srch_cntrpoint.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=920,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a>
+    </td>
+    <td><b>:</b> 
+    <?php
+        $showCenterPointOptions = array('Queensland, QLD' => get_string('QLD', 'block_moodle_google'), 'New South Wales, NSW' => get_string('NSW', 'block_moodle_google'), 'South Australia, SA' => get_string('SA', 'block_moodle_google'), 'Tasmania, TAS' => get_string('TAS', 'block_moodle_google'), 'Victoria, VIC' => get_string('VIC', 'block_moodle_google'), 'Western Australia, WA' => get_string('WA', 'block_moodle_google'));
+        choose_from_menu($showCenterPointOptions, 'block_moodle_google_center_point', empty($this->config->block_moodle_google_center_point) ? 'Queensland, QLD' : $this->config->block_moodle_google_center_point, '');
+    ?>
+    </td>
+    </tr>
+    <!--  ********************** End of code for Google Local Search Center Point **********************  --></p></table>
+    
+    </div> 
+            
+    <!-- Tab 2 Set User Defined Website -->
+    <div>
+    
+    <!--  ********************** The following code is for User Defined Website to search with Google **********************  -->
+    <table cellpadding="12" cellspacing="0">
+    
+    <tr valign="top">
+    <td  ALIGN="left"><b><?php print_string("user_def_website", "block_moodle_google") ?></b> &nbsp;<a title="Help with User Defined Website (new window)" href="help.php?module=moodle_google_help&amp;file=ic_usr_def_website.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_usr_def_website.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=800,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>  
+    <td><b>:</b> <input name="block_moodle_google_user_website" type="text" size="26" value="<?php if(!empty($this->config->block_moodle_google_user_website)) {p($this->config->block_moodle_google_user_website);} ?>"</td>                                                           
+    </tr>
+
+    <tr valign="top">
+    <td  ALIGN="left"><b><?php print_string("user_def_website_label", "block_moodle_google") ?></b> &nbsp;<a title="Help with Label for User Defined Website (new window)" href="help.php?module=moodle_google_help&amp;file=ic_usr_def_website.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_usr_def_website.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=800,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>  
+    <td><b>:</b> <input name="block_moodle_google_website_label" type="text" size="26" value="<?php if(!empty($this->config->block_moodle_google_website_label)) {p($this->config->block_moodle_google_website_label);} ?>"</td>
+    </tr>
+    <!--  ********************** End of code for User Defined Website to search with Google **********************  -->
+    </table>
+    
+    </div> 
+    
+    
+    <!-- Tab 3 Set Search Result Parameters -->
+    <div>
+    
+    <table cellpadding="12" cellspacing="0">
+    
+    <!--  ********************** Code for Google Search Result in Tabbed Mode **********************  -->
+    <tr valign="top">
+    <td align="left"><b><?php print_string('tabbed_mode', 'block_moodle_google'); ?></b> &nbsp;<a title="Help with Show Google Search Result in Tabbed Layout (new window)" href="help.php?module=moodle_google_help&amp;file=ic_tbd_lyout.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_tbd_lyout.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=924,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+    <td>
+    <input name="tabbedmode" type="hidden"  value="0" />
+    <b>:</b> <input name="tabbedmode" type="checkbox" id="tabbedmode" <?php if(!empty($this->config->tabbedmode)) echo 'checked="checked"'; ?> /></td>
+   
+    </tr>
+    <!-- ********************** End of code for Google Search Result in Tabbed Mode **********************  -->  
+
+
+    <!--  ********************** Code for Google Search Number of Result in Twiddle Mode **********************  -->
+    <tr valign="top">
+    <td align="left"><b><?php print_string('number_of_result', 'block_moodle_google'); ?></b> &nbsp;<a title="Help with Number of Result (new window)" href="help.php?module=moodle_google_help&amp;file=ic_nmbr_rslt.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_nmbr_rslt.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=924,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+    <td><b>:</b> 
+    <?php
+        $showResultOptions = array(Small_Result => get_string('small_result', 'block_moodle_google'), Large_Result => get_string('large_result', 'block_moodle_google'));
+        choose_from_menu($showResultOptions, 'number_of_result', empty($this->config->number_of_result) ? Small_Result : $this->config->number_of_result, '');
+    ?>
+    </td>
+    </tr>
+    <!--  ********************** End of code for Google Search Number of Result in Twiddle Mode **********************  -->
+
+    <!--  ********************** Code for Google Search Expansion Mode **********************  -->
+    <tr valign="top">
+    <td align="left"><b><?php print_string('result_expand_mode', 'block_moodle_google'); ?></b> &nbsp;<a title="Help with  Google Search Results Twiddle Expansion (new window)" href="help.php?module=moodle_google_help&amp;file=ic_twdl_mode.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=ic_twdl_mode.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=725,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+    <td><b>:</b> 
+    <?php
+        $showExpandModeOptions = array(Closed => get_string('CLOSED', 'block_moodle_google'), Partial => get_string('PARTIAL', 'block_moodle_google'), Open => get_string('OPEN', 'block_moodle_google'));
+        choose_from_menu($showExpandModeOptions, 'block_moodle_google_result_expand_mode', empty($this->config->block_moodle_google_result_expand_mode) ? Closed : $this->config->block_moodle_google_result_expand_mode, '');
+    ?>
+    </td>
+    </tr>
+    <!--  ********************** End of code for Google Search Expansion Mode **********************  -->
+    
+    </table>
+    
+    </div> 
+    
+    </div> 
+    </div> 
+     
+     <script>
+     (function() {
+    var tabView = new YAHOO.widget.TabView('demo');
+
+    YAHOO.log("The example has finished loading; as you interact with it, you'll see log messages appearing here.", "info", "example");
+})();
+</script>
+    
+    <!--  ********************** Code for Save Changes Submit Button **********************  -->
+    
+    <br>
+    <br>
+    
+    &nbsp;&nbsp;&nbsp;<button style="font-size: 10pt;" type="submit" name="button1" value="submit"><?php print_string("savechanges")?></button> 
+    
+    
+    <br>
+    <!--  ********************** End of code for Save Changes Submit Button **********************  -->
+    
+    

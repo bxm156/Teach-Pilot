@@ -1,0 +1,88 @@
+<?php 
+/******************************************************************************
+ *                                                                            *
+ * Copyright (c) 1999-2008  Wimba, All Rights Reserved.                       *
+ *                                                                            *
+ * COPYRIGHT:                                                                 *
+ *      This software is the property of Wimba.                               *
+ *      You can redistribute it and/or modify it under the terms of           *
+ *      the GNU General Public License as published by the                    *
+ *      Free Software Foundation.                                             *
+ *                                                                            *
+ * WARRANTIES:                                                                *
+ *      This software is distributed in the hope that it will be useful,      *
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *      GNU General Public License for more details.                          *
+ *                                                                            *
+ *      You should have received a copy of the GNU General Public License     *
+ *      along with the Wimba Moodle Integration;                              *
+ *      if not, write to the Free Software Foundation, Inc.,                  *
+ *      51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA                *
+ *                                                                            *
+ * Author: Thomas Rollinger                                                   *
+ *                                                                            *
+ *                                                                            *
+ ******************************************************************************/
+ 
+require_once("lib/php/lc/LCAction.php");
+require_once("lib/php/lc/lcapi.php");
+
+$lcApi=new LCAction(null,$CFG->liveclassroom_servername, 
+           $CFG->liveclassroom_adminusername, 
+           $CFG->liveclassroom_adminpassword, $CFG->dataroot);
+$version = $lcApi->getVersion();
+
+?>
+
+<link rel="STYLESHEET" href="<?php p($CFG->wwwroot) ?>/mod/liveclassroom/css/StyleSheet.css"" type="text/css" />
+<form method="post" action="module.php" name="form">
+    <input type="hidden" name="sesskey" value="<?php echo $USER->sesskey ?>">
+    <input type="hidden" name="module" value="liveclassroom">
+    <div style="width:700px;margin-left:150px;margin-right:150px;" class="general_font"> 
+        
+		<p>
+		    <span class="config_title"><?php print_string('serverconfiguration', 'liveclassroom')?></span>
+		</p>
+		<div style="border:1px solid #78879A ">
+	        <p>
+			     <label class="LargeLabel_Width TextRegular_Right"><?php print_string('servername', 'liveclassroom')?>:</label>
+			    <input name="servername" type="text" size="30" value="<?php p($CFG->liveclassroom_servername) ?>" />
+			</p>
+			<p>
+			    <span class="TextComment AlignRight"><?php print_string('configservername', 'liveclassroom') ?></span>
+			</p> 
+			<p>
+			    <label class="LargeLabel_Width TextRegular_Right"><?php print_string('adminusername', 'liveclassroom')?>:</label>
+			    <input name="adminusername" type="text" size="30" value="<?php p($CFG->liveclassroom_adminusername) ?>" />
+			</p>
+			<p>
+			    <label class="LargeLabel_Width TextRegular_Right"><?php print_string('adminpassword', 'liveclassroom')?>:</label>
+			     <input name="adminpassword" type="password" size="30" value="<?php p($CFG->liveclassroom_adminpassword) ?>" />
+			</p>
+		</div>
+        <div style="border:1px solid #78879A;margin-top:20px;">
+	        <p>
+	            <label class="LargeLabel_Width TextRegular_Right"><?php print_string('lcversion', 'liveclassroom')?>:</label>
+	            <span><?php echo $version; ?></span>
+	        </p>
+	        <p>
+	            <label class="LargeLabel_Width TextRegular_Right"><?php print_string('integrationversion', 'liveclassroom')?>:</label>
+	            <span><?php echo LIVECLASSROOM_MODULE_VERSION ?></span>
+	        </p>
+	        <p>
+	            <label class="LargeLabel_Width TextRegular_Right"><?php echo get_string("loglevel", "liveclassroom");?></label>
+	            <select size="1" name="log_level">
+	              <option value=1 <?php if (@$CFG->liveclassroom_log_level == 1) echo "selected"; ?>>DEBUG</option>
+	              <option value=2 <?php if (!isset($CFG->liveclassroom_log_level) || @$CFG->liveclassroom_log_level == 2) echo "selected"; ?>>INFO</option>
+	              <option value=3 <?php if (@$CFG->liveclassroom_log_level == 3) echo "selected"; ?>>WARN</option>
+	              <option value=4 <?php if (@$CFG->liveclassroom_log_level == 4) echo "selected"; ?>>ERROR</option>              
+	            </select>
+	            <a href=<?php  echo $CFG->wwwroot."/mod/liveclassroom/logs.php?action=list"; ?> onclick="document.forms['logs_form'].submit();"><?php echo get_string("viewlogs", 'liveclassroom');?></a>                                       
+	        </p>
+        </div>
+        <p style="height:30px;padding-left:290px">  
+            <input type="submit" class="regular_btn-submit" value="<?php print_string("savechanges") ?>" />
+        </p>
+    </div>
+</form>

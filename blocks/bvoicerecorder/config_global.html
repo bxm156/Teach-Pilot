@@ -1,0 +1,33 @@
+	<table cellpadding="9" cellspacing="0">
+<tr valign="top">
+    <td align="right"><?php print_string('coursenumbers', 'block_bliveclassroom') ?></td>
+    <td>
+    <input name="block" type="hidden" value="<?php echo intval($_REQUEST['block']); ?>" />
+    <input name="block_bliveclassroom_coursenumber" type="text" size="5" value="<?php 
+    if(isset($CFG->block_bliveclassroom_coursenumber)) {
+        p($CFG->block_bliveclassroom_coursenumber);
+    } else {
+        p(3);
+    } ?>" />
+    </td>
+
+</tr>
+<tr>
+<tr valign="top">
+    <td align="right"><?php print_string('globalnumbers', 'block_bliveclassroom') ?></td>
+		
+    <td>
+    <input name="block_bliveclassroom_globalnumber" type="text" size="5" value="<?php 
+    if(isset($CFG->block_bliveclassroom_globalnumber)) {
+        p($CFG->block_bliveclassroom_globalnumber);
+    } else {
+        p(5);
+    } ?>" />
+    </td>
+
+</tr>
+
+    <td colspan="2" align="center">
+    <input type="submit" value="<?php print_string('savechanges') ?>" /></td>
+</tr>
+</table>

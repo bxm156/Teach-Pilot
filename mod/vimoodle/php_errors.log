@@ -1,0 +1,4 @@
+[14-May-2010 18:18:40] PHP Parse error:  parse error in C:\Inetpub\wwwroot\moodle\mod\vimoodle\view.php on line 73
+[14-May-2010 18:23:55] PHP Notice:  Undefined variable: video in C:\Inetpub\wwwroot\moodle\mod\vimoodle\view.php on line 73
+[14-May-2010 19:08:02] PHP Notice:  Undefined variable: result2 in C:\Inetpub\wwwroot\moodle\mod\vimoodle\view.php on line 77
+[14-May-2010 19:13:17] PHP Fatal error:  Call to undefined function html_entitiy_decode() in C:\Inetpub\wwwroot\moodle\mod\vimoodle\view.php on line 77

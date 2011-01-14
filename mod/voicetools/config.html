@@ -1,0 +1,182 @@
+<?php
+require_once('lib/php/common/WimbaLib.php');
+require_once('lib/php/vt/WimbaVoicetoolsAPI.php');
+define("VOICETOOLS_MODULE_VERSION", "4.0.1-1");
+set_error_handler("manage_error");
+if(isset($CFG->voicetools_servername))
+{
+    $servername=$CFG->voicetools_servername;
+}
+else
+{
+    $servername="";
+}
+
+if(isset($CFG->voicetools_adminusername))
+{
+    $adminusername=$CFG->voicetools_adminusername;
+}
+else
+{
+    $adminusername="";
+}
+
+if(isset($CFG->voicetools_adminpassword))
+{
+    $adminpassword=$CFG->voicetools_adminpassword;
+}
+else
+{
+    $adminpassword="";
+}
+
+$version = voicetools_api_get_version();
+if($version === false )
+{
+    $version = "Unknown";
+}
+?>
+
+<script language="javascript" src="<?php echo $CFG->wwwroot;?>/mod/voicetools/lib/web/js/lib/prototype/prototype.js"></script> 
+<script type="text/javascript">
+
+function testServerConfiguration(url, servername, username, password) {
+    var url = url + "?server="+servername+"&user="+username+"&pass=" + password ;
+    var xml;
+    new Ajax.Request(url,
+    {
+        method:'get',
+         mimetype:"text/plain",
+        onSuccess: function(transport){      
+            if(transport.responseText != "ok")//there is a problem
+	        {
+	            displayPopup(transport.responseText);
+	        }
+	        else
+	        {
+	            document.myform.submit();
+	        }
+        },
+        onFailure: function(){  }
+    });
+}
+
+function CheckConfiguration(){  
+    serverName = document.myform.voicetools_servername; 
+    adminUserName = document.myform.voicetools_adminusername; 
+    adminPassword = document.myform.voicetools_adminpassword;
+     
+    if(serverName.value.length==0 || serverName.value == null)
+    {
+        return displayPopup("<?php echo get_string('wrongconfigurationURLunavailable', 'voicetools');?>");
+    }
+    if(adminUserName.value.length==0 || adminUserName.value == null)
+    {
+        return displayPopup("<?php echo get_string('emptyAdminUsername', 'voicetools');?>");
+    }
+    if(adminPassword.value.length==0 || adminPassword.value == null)
+    {
+        return displayPopup("<?php echo get_string('emptyAdminPassword', 'voicetools');?>");
+    }
+    if (serverName.value.charAt(serverName.value.length-1) == '/') 
+    {
+        return displayPopup("<?php echo get_String('trailingSlash', 'voicetools');?>");
+    } 
+
+    if (!serverName.value.match('http://') && !serverName.value.match('https://')) 
+    {
+        return displayPopup("<?php echo get_String('trailingHttp', 'voicetools');?>");
+    } 
+    //check if the api account filled is correct and allowed
+    testServerConfiguration("<?php echo $CFG->wwwroot;?>/mod/voicetools/testConfig.php",serverName.value,adminUserName.value,adminPassword.value);     
+}
+    
+function displayPopup(errorText){
+   $("popup").show();
+   $("hiddenDiv").show();
+   $("popupText").innerHTML=errorText;
+   return false;
+}
+    
+    
+function undisplayPopup(){
+   $("popup").hide();
+   $("hiddenDiv").hide();
+   $("popupText").innerHTML="";
+   return false;
+}
+</script>
+
+<link rel="STYLESHEET" href="<?php p($CFG->wwwroot) ?>/mod/voicetools/css/StyleSheet.css"" type="text/css" />    
+<form method="post" action="module.php" name="myform" >
+    <input type="hidden" name="sesskey" value="<?php echo $USER->sesskey ?>">
+    <div style="width:700px;margin-left:150px;margin-right:150px; font-family:Lucida Grande,Verdana,Arial,sans-serif;font-size:11px;"> 
+       
+       <p>
+           <span class="config_title"><?php print_string('serverconfiguration', 'voicetools')?></span>
+       </p>
+       <div style="border:1px solid #78879A ">  
+            <p>
+                 <label class="LargeLabel_Width TextRegular_Right"><?php print_string('servername', 'voicetools')?>:</label>
+                <input name="voicetools_servername" type="text" size="30" value="<?php echo $servername; ?>" />
+            </p>
+            <p>
+                <span class="TextComment AlignRight"><?php print_string('configservername', 'voicetools') ?></span>
+            </p> 
+            <p>
+                <label class="LargeLabel_Width TextRegular_Right"><?php print_string('adminusername', 'voicetools')?>:</label>
+                <input name="voicetools_adminusername" type="text" size="30" value="<?php echo $adminusername; ?>" />
+            </p>
+            <p>
+                <label class="LargeLabel_Width TextRegular_Right"><?php print_string('adminpassword', 'voicetools')?>:</label>
+                 <input name="voicetools_adminpassword" type="password" size="30" value="<?php echo $adminpassword; ?>" />
+            </p>
+        </div>      
+	    <div style="border:1px solid #78879A;margin-top:20px;">
+	        <p>
+	            <label class="LargeLabel_Width TextRegular_Right"><?php print_string('vtversion', 'voicetools')?>:</label>
+	            <span><?php echo $version; ?></span>
+	        </p>
+	        <p>
+	            <label class="LargeLabel_Width TextRegular_Right"><?php print_string('integrationversion', 'voicetools')?>:</label>
+	            <span><?php echo VOICETOOLS_MODULE_VERSION ?></span>
+	        </p>
+	        <p>
+	            <label class="LargeLabel_Width TextRegular_Right"><?php echo get_string("loglevel", "voicetools");?></label>
+	            <select size="1" name="log_level">
+	              <option value=1 <?php if (@$CFG->voicetools_log_level == 1) echo "selected"; ?>>DEBUG</option>
+	              <option value=2 <?php if (!isset($CFG->voicetools_log_level) || @$CFG->voicetools_log_level == 2) echo "selected"; ?>>INFO</option>
+	              <option value=3 <?php if (@$CFG->voicetools_log_level == 3) echo "selected"; ?>>WARN</option>
+	              <option value=4 <?php if (@$CFG->voicetools_log_level == 4) echo "selected"; ?>>ERROR</option>              
+	            </select>
+	            <a href=<?php  echo $CFG->wwwroot."/mod/voicetools/logs.php?action=list"; ?> onclick="document.forms['logs_form'].submit();"><?php echo get_string("viewlogs", 'voicetools');?></a>                                       
+	        </p>
+        </div>
+        <p style="height:30px;padding-left:290px">  
+            <input type="button" class="regular_btn-submit"  onclick="CheckConfiguration()" value="<?php print_string("savechanges") ?>" />
+        </p>
+     </div>
+</form>    
+<div class="wimba_box" id="popup" style="width:350px;z-index:150;display:none;position:absolute;left: 38%; top: 25%;">
+	 <div class="wimba_boxTop">
+	    <div>
+	            <span class="wimba_boxTopTitle"  style="width:300px;">Error        
+	            </span>    
+	            <span title="close" class="wimba_close_box" onclick="undisplayPopup();">Close</span>     
+	            <p>
+	                   <span id="popupText" ></span>
+	            </p>
+	            <p style="height:20px;padding-top:10px;padding-left:20px">
+	                <input class="regular_btn-submit" style="margin-left:70px;" type="button" id="advancedOk" onclick="undisplayPopup()"  Value="Ok"/>
+	            </p>
+	    </div>
+	</div>
+	<div class="wimba_boxBottom">
+	    <div>
+	    </div> 
+	</div>
+</div> 
+<div id="hiddenDiv" class="opac" style="display:none">
+     <!--[if lte IE 6.5]><iframe></iframe><![endif]-->
+</div>
+

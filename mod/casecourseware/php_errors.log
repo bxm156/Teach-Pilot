@@ -1,0 +1,4 @@
+[12-Apr-2010 16:22:08] PHP Fatal error:  Call to undefined function fh32() in C:\Inetpub\wwwroot\moodle\mod\casecourseware\view.php on line 68
+[12-Apr-2010 16:28:28] PHP Warning:  require_once(C:\Inetpub\wwwroot\moodle/mod/newmodule/lib.php) [<a href='function.require-once'>function.require-once</a>]: failed to open stream: No such file or directory in C:\Inetpub\wwwroot\moodle\mod\casecourseware\localib.php on line 2
+[12-Apr-2010 16:28:28] PHP Fatal error:  require_once() [<a href='function.require'>function.require</a>]: Failed opening required 'C:\Inetpub\wwwroot\moodle/mod/newmodule/lib.php' (include_path='C:\Inetpub\wwwroot\moodle/lib/pear;.;C:\php5\pear') in C:\Inetpub\wwwroot\moodle\mod\casecourseware\localib.php on line 2
+[12-Apr-2010 16:34:39] PHP Notice:  Undefined property: stdClass::$description in C:\Inetpub\wwwroot\moodle\mod\casecourseware\view.php on line 74

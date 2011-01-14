@@ -1,0 +1,53 @@
+<?php
+$string['BigBlueButton'] = 'BigBlueButton';
+$string['config_instructions'] = 'Please complete all of the fields below to configure the learning environment to talk to your BigBlueButton server.';
+$string['config_hostmyself'] = 'I am hosting my own BigBlueButton server.';
+$string['config_hostbydualcode'] = 'My BigBlueButton server is hosted by Dual Code (<a href=\"http://www.dualcode.com/bigbluebutton/\" target=\"_blank\">learn more</a>).';
+$string['config_server'] = 'The domain name or IP address of the BigBlueButton server.';
+$string['config_salt'] = 'The security salt as configured on the BigBlueButton server.';
+$string['config_meetingrooms'] = 'Entering a * character will allow an unlimited amount of BigBlueButton rooms. If you want to restrict the number of rooms, please list the meeting IDs, separated by a comma.';
+$string['mod_instructions'] = 'Please complete all of the fields below for the meeting room in question.';
+$string['mod_instructions_readonly'] = 'This meeting has already been created and its parameters cannot be modified.';
+$string['http'] = 'http://';
+$string['securitysalt'] = 'Security Salt';
+$string['meetingrooms'] = 'Meeting IDs';
+$string['meetingname'] = 'Meeting Name';
+$string['meetingid'] = 'Meeting ID';
+$string['accountid'] = 'Account ID';
+$string['accountpwd'] = 'Password';
+$string['meetingid_empty'] = 'There are no BigBlueButton rooms available.<br><br>Please contact your administrator.';
+$string['attendeepw'] = 'Attendee Password';
+$string['moderatorpw'] = 'Moderator Password';
+$string['loginrules'] = 'Login Rules';
+$string['newwindow'] = 'Application Window';
+$string['welcomemsg'] = 'Welcome Message';
+$string['modulenameplural'] = 'BigBlueButtons';
+$string['modulename'] = 'BigBlueButton';
+$string['BigBlueButtonreport'] = 'BBB Report';
+$string['seesession'] = 'See Session';
+$string['deletesession'] = 'Delete Session';
+$string['sessions'] = 'Sessions';
+$string['nomessages'] = 'No Messages';
+$string['nextsession'] = 'Next Session';
+$string['joinmeeting_instructions'] = 'The meeting is now in progress.<br>Please click on the link below to join in.';
+$string['joinmeeting_instructions_mod'] = 'Click on one of the links below to join<br>the meeting as an attendee or a moderator.';
+$string['joinmeeting_instructions_guest'] = 'Please enter your name in the field below<br>and click on the link to join the meeting.';
+$string['joinmeeting'] = 'Join Meeting';
+$string['joinmeeting_asguest'] = 'Attendee';
+$string['joinmeeting_asmoderator'] = 'Moderator';
+$string['cannot_edit'] = 'Note that some of the fields cannot be modified when editing an existing meeting.';
+$string['noguests'] = 'We\'re sorry, but this meeting room does not allow anonymous guests.';
+$string['notrunning'] = 'The moderator has not yet joined the meeting.<br>Please wait here until the meeting begins.';
+$string['autorefresh'] = 'This page automatically refreshes.';
+$string['webconference:deletelog'] = 'Can delete logs';
+$string['webconference:ismoderator'] = 'Can be a moderator';
+$string['webconference:isattendee'] = 'Can attend meetings';
+$string['webconference:readlog'] = 'Can read logs';
+$string['webconference:webconference'] = 'General WC privileges';
+
+// Error messages
+$string['duplicateWarning'] = 'This conference was already in existance and may currently be in progress.';
+$string['idNotUnique'] = 'A meeting already exists with that meeting ID. To reuse the same meeting ID, you must make sure that you configure the meeting with the same attendee password and moderator password as the original instance.';
+$string['checksumError'] = 'The security salt for this module is incorrect. Please contact the system administrator.';
+$string['invalidCredentials'] = 'Your subscription to the BigBlueButton service has expired or the credentials you entered are not valid. Please <a href=\"http://www.dualcode.com/bigbluebutton/\" target=\"_blank\">renew your subscription</a> or contact the system administrator.';
+?>

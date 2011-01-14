@@ -1,0 +1,32 @@
+HOW TO INSTALL THE myUDUTU MODULE
+---------------------------------
+
+
+Installing myUdutu module is as easy as installing other modules in Moodle. Just unzip the myUdutu archive file under /moodle/mod/udutu folder (you will have to create a 'udutu' directory) in your Moodle installation. Then, start Moodle and login with your administrator account. Next, click on notifications - Moodle will then start to create necessary database tables. 
+
+To access the module, click on the Modules tab and click 'Activities'. Your installation should appear as the name myUdutu.
+
+Don't forget that the default upload limitation for php and SCORM/AICC module of moodle is set to 2MB, to upload bigger files :
+
+In moodle, for each course you should click settings on main course screen and then change maximum upload size.
+
+In php, go to your main php installation folder and locate the 'php.ini' file. Right click on that file and open with your text editor. Then make this necessary changes:
+
+
+post_max_size //set to a number high enough to accept your largest course
+upload_max_filesize // set to a number high enough
+mysql.connect_timeout // set to -1 for unlimited time or a number high enough
+max_execution_time  // set to -1 for unlimited time or a number high enough
+max_input_time	// set to -1 for unlimited time or a number high enough
+memory_limit // set to a number high enough 
+
+This module is compatible with moodle 1.8 and 1.9.  (1.95 can be found at http://www.myudutu.com/downloads/moodle/v1_95/udutu.zip
+
+If you have licensed your own myUdutu installation, please change the following line in your moodle\mod\udutu\locallib.php so that it points to the URL of your myUdutu installation.
+
+if (!isset($CFG->udutu_path)) 
+{
+		set_config('udutu_path','http://www.myudutu.com/myudutu/moodlelogin.aspx');
+}
+
+The myUdutu forums are at: http://myudutu.com/forums/forums/default.aspx

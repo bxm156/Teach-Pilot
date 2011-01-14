@@ -1,0 +1,2 @@
+[26-May-2010 18:06:38] PHP Warning:  mysql_fetch_assoc(): supplied argument is not a valid MySQL result resource in C:\Inetpub\wwwroot\moodle\tools\adduser.php on line 202
+[01-Jun-2010 23:59:23] PHP Warning:  Missing boundary in multipart/form-data POST data in Unknown on line 0

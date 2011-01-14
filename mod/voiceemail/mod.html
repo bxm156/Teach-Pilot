@@ -1,0 +1,657 @@
+<?php    
+/******************************************************************************
+ *                                                                            *
+ * Copyright (c) 1999-2008  Wimba, All Rights Reserved.                       *
+ *                                                                            *
+ * COPYRIGHT:                                                                 *
+ *      This software is the property of Wimba.                               *
+ *      You can redistribute it and/or modify it under the terms of           *
+ *      the GNU General Public License as published by the                    *
+ *      Free Software Foundation.                                             *
+ *                                                                            *
+ * WARRANTIES:                                                                *
+ *      This software is distributed in the hope that it will be useful,      *
+ *      but WITHOUT ANY WARRANTY; without even the implied warranty of        *
+ *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the         *
+ *      GNU General Public License for more details.                          *
+ *                                                                            *
+ *      You should have received a copy of the GNU General Public License     *
+ *      along with the Wimba Moodle Integration;                              *
+ *      if not, write to the Free Software Foundation, Inc.,                  *
+ *      51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA                *
+ *                                                                            *
+ * Author: Thomas Rollinger                                                   *
+ *                                                                            *
+ * Date: July  2008                                                           *
+ *                                                                            *
+ ******************************************************************************/
+
+/* $Id: mod.html 65289 2008-07-03 18:45:06Z thomasr $ */
+
+require_once("../config.php");
+require_once('lib/php/vt/WimbaVoicetoolsAPI.php');
+require_once('lib/php/vt/WimbaVoicetools.php'); 
+require_once('lib/php/common/WimbaLib.php'); 
+require_once('lib/php/vt/VtAction.php'); 
+require_once($CFG->dirroot.'/calendar/lib.php');
+require_once($CFG->dirroot.'/mod/voiceemail/lib.php');
+require_once($CFG->dirroot.'/version.php');  
+
+
+//test if the current user can see this page
+require_login($course->id);     
+if (!isteacher($course->id, $USER->id)) { //to Be sure
+    error("You need to be a teacher in this course to create an instance");
+}
+  
+if($course->format == "site")
+{
+    error("You need to be in a course to create an instance");
+}
+  
+//get the required parameters
+$course_id = optional_param('id', 0, PARAM_INT);
+$resource_id = optional_param('rid',null, PARAM_RAW);
+$update = optional_param('update', null, PARAM_INT);
+$sectionId = optional_param('section', null, PARAM_INT);
+
+
+$name="";    
+$error="";
+$event=false;
+$description="";
+$tweekSelected=($sectionId-1)*604800+$course->startdate+3600;//500 to make sure that we are in the day after
+$stringDate=date('m',$tweekSelected)."/".date('d',$tweekSelected)."/".date('Y',$tweekSelected); 
+$checked ="";
+$disabled="disabled"; 
+$cal_visibility="hidden";
+$disabledCheckbox="";  
+$isButtonDisabled = "-disabled";
+
+$audioQualityArray = array("spx_8_q3" => "","spx_16_q4" => "","spx_16_q6" => "","spx_32_q8" => "");
+$maxLengthArray = array("15"=>"","30"=>"","60"=>"","180"=>"","300"=>"","600"=>"","1200"=>"");
+$eventDate=mktime(0,0,0,1,date('z',$course->startdate)+($sectionId-1)*7+1,date('y',$course->startdate))  ;
+$activity_context=get_string('addActivity', 'voiceemail');
+       
+/// First we check that form variables have been initialised
+if (!isset($form->name)) 
+{
+    $form->name = '';
+}
+if (!isset($form->type)) 
+{
+    $form->type = '';
+}
+if (!isset($form->intro)) 
+{
+    $form->intro = '';
+}
+if (!isset($form->descrption)) 
+{
+    $form->descrption = '';
+}
+if (!isset($form->section)) 
+{
+    $form->section = '';
+}
+
+
+if( isset($update) )
+{ //update
+    $disabled=""; 
+    $textSaveButton=get_string('validationElement_saveAll', 'voiceemail');
+    $textSaveAndBackButton=get_string('validationElement_saveAllAndBack','voiceemail');
+    
+    $isButtonDisabled = "";
+    //get the information of the activity
+    if (! $cmVT = get_record("course_modules", "id", $update)) 
+    {
+        return false;
+    }
+    $course_id=$cmVT->course;
+    
+    //get the activity instance
+    $activity = get_record("voiceemail", "id", $cmVT->instance );   
+    $sectionId = $activity->section;      
+    $resourceBd = get_record("voiceemail_resources","id",$activity->rid); 
+    $resource_id = $resourceBd->rid;
+    
+    //get the calendar event associated
+    $event=voiceemail_get_event_calendar($activity->id);
+    if($event)
+    {
+        $cal_visibility="visible";
+        $checked ="checked"; 
+        list($description,$link)=split("<br>",$event->description);
+        $eventDate=$event->timestart;
+        $stringDate=date('m',$eventDate)."/".date('d',$eventDate)."/".date('Y',$eventDate); 
+    }
+    else
+    {
+        $tweekSelected=($sectionId-1)*604800+$course->startdate+3600;//500 to make sure that we are in the day after
+        $stringDate=date('m',$tweekSelected)."/".date('d',$tweekSelected)."/".date('Y',$tweekSelected);     
+        $eventDate=mktime(0,0,0,1,date('z',$course->startdate)+($sectionId-1)*7+1,date('y',$course->startdate))  ;
+    }
+
+    $name=$activity->name; 
+    $recipients=$activity->recipients_email; 
+    $activity_context=get_string('updateActivity', 'voiceemail');
+    
+    //get the Vmail resouce    
+    $vtAction = new vtAction($USER->email); 
+    $resource = $vtAction->getResource($resource_id) ;
+    if($resource->error != "error"){
+        $resourceOptions = $resource->getOptions() ;
+        $maxLength = $resourceOptions->getMaxLength();
+        $resourceAudio = $resourceOptions->getAudioFormat();
+        $audioQuality = $resourceAudio->getName();
+        $replyLink = $resourceOptions->getReplyLink();
+        $prefilledSubject = $resourceOptions->getSubject();
+        $audioQualityArray[$audioQuality]="selected='true'"; 
+        $maxLengthArray[$maxLength]="selected='true'";
+    }
+    else
+    {
+        $error=true;
+    }
+  
+}
+else
+{//new
+    $textSaveButton=get_string('validationElement_createActivity', 'voiceemail');
+    $textSaveAndBackButton=get_string('validationElement_createAndBack', 'voiceemail');
+
+    $audioQualityArray["spx_16_q4"] = "selected='true'";
+    $maxLengthArray["180"] = "selected='true'"; 
+    $replyLink = "false";
+    $prefilledSubject = "";
+    $recipients = "all";
+}   
+ 
+if(($course->format == "weeks" || $course->format == "weekscss") &&  $sectionId == 0)
+{
+    $disabledCheckbox="disabled";           
+}
+  
+ 
+// Visible to students or not   
+if ($form->coursemodule) 
+{
+    $visible = get_field('course_modules', 'visible', 'id', $form->coursemodule);
+} 
+else 
+{
+    $visible = true;
+}
+
+if ($form->mode == 'add') { // in this case $form->section is the section number, not the id
+    $hiddensection = !get_field('course_sections', 'visible', 'section', $form->section, 'course', $form->course);
+} 
+else
+{
+    $hiddensection = !get_field('course_sections', 'visible', 'id', $form->section);
+}
+
+if ($hiddensection) 
+{
+    $visible = false;
+}
+
+$url_params = voiceemail_get_url_params($course_id);      
+
+?>
+<link rel="STYLESHEET" href="<?php p($CFG->wwwroot) ?>/mod/voiceemail/css/StyleSheet.css" type="text/css" />
+<script language="javascript" src="<?php p($CFG->wwwroot)?>/mod/voiceemail/lib/web/js/lib/prototype/prototype.js"></script> 
+<script type="text/javascript"> 
+
+
+<?php if( isset($update) ){ ?>
+var isFormValidated=true; 
+<?php }else{ ?>
+var isFormValidated=false; 
+<?php } ?> 
+
+function validate(type){
+  // name can't be null
+  $('isfirst').value = type;
+  
+  if( isFormValidated == false)
+  { 
+    return false;
+  }
+  
+  if($("pre_filled_subject_yes").checked && $("subject").value.blank())
+  {
+    if (!confirm("The subject field is blank. Do you wish to continue?"))
+    {
+        return false;
+    }
+  }
+  $("form").submit();
+}
+
+
+function isValidate(){
+  // name can't be null
+  if( $("name").value.blank())
+  { 
+    isFormValidated=false;  
+    $("submit_button").addClassName("regular_btn-disabled");
+    $("submit_button").removeClassName("regular_btn");
+    $("submit_button").disabled="true";
+    $("submit_button_back").addClassName("regular_btn-disabled");
+    $("submit_button_back").removeClassName("regular_btn");
+    $("submit_button_back").disabled="";
+    return false;
+  }
+  isFormValidated=true;  
+  $("submit_button").removeClassName("regular_btn-disabled");
+  $("submit_button").addClassName("regular_btn");
+  $("submit_button").disabled="";
+  $("submit_button_back").removeClassName("regular_btn-disabled");
+  $("submit_button_back").addClassName("regular_btn");
+  $("submit_button_back").disabled="";
+}
+
+
+function hideCalendarEvent(value)
+{
+                              
+    if($("calendar_event").checked==true)
+    {
+        value="visible";
+    }
+    else
+    {
+        value="hidden";
+    }
+     
+    
+    $("calendar").style.visibility=value ;
+    $("calendar_extra").style.visibility=value ;
+}
+
+function change()
+{ 
+
+    if($("section").value == 0)
+    {
+        $("calendar_event").checked="";
+        $("calendar_event").disabled="disabled";     
+        if( $("comment_date") != null )
+        {
+            $("comment_date").innerHTML="";
+        }
+        hideCalendarEvent();
+    }
+    else
+    {   
+        $("calendar_event").disabled="";    
+        
+        
+        var  value = parseInt("<?php echo $course->startdate ?>") + 
+                     parseInt(($("section").value -1) * 604800) + 
+                     parseInt($("start_day").value) + 3600;  //add 3600 for ie
+                  
+        var date = new Date(value*1000);
+        var month = date.getMonth()+1;
+        if(date.getMonth()+1 < 10)
+        {
+            month = "0" + (date.getMonth()+1);
+        }
+        
+        var day = date.getDate();
+        if(day < 10)
+        {
+            day = "0" + date.getDate();
+        }
+        
+        $("comment_date").innerHTML= month +"/"+day+"/"+date.getFullYear();
+       
+        $("calendar_start").value= value; 
+    
+    }      
+} 
+
+function enableSubject(enable)
+{
+    $("subject").disabled=enable;
+}
+
+</script>
+<style>
+.content
+{
+    margin:-5px;
+}
+
+select
+{
+    font-size:11px;
+}
+
+</style>
+<div class="content general_font" id=content style="width:700px;background-color:white;margin:0 auto;border: solid 1px #D9DEE5;" align=center>
+    <form name="form" id="form" method="post" action="mod.php"> 
+
+        <div class="headerBar">
+            <div class="headerBarLeft" >
+                <span>Wimba</span>
+            </div>
+        </div>
+        <div id="activity" style="width=700px;padding-top: 10px" align="left">
+            <p>
+                <label class="LargeLabel_Width TextRegular_Right" for="name"><span class="required">*</span><?php  print_string('activity_name', 'voiceemail') ?></label>
+                <input type="text" id="name" name="name" size="25" maxlength="255" onkeyup="isValidate()" value="<?php echo $name ?>">  
+                <label class="TextRegular" style="padding-left:150px"><span class="required">*</span><?php print_string('required_fields', 'voiceemail')?></label> 
+            </p>
+                 
+            <?php if($course->format == "weeks" || $course->format == "weekscss"){ ?>
+            <p>      
+                <label class="LargeLabel_Width TextRegular_Right" for="section"><?php print_string('weeksformat', 'voiceemail')?></label>
+                <select name="section" id="section" onchange="change()">
+                    <?php   
+                        echo getListOfWeeks($course,$sectionId);
+                    ?>
+                </select>                               
+            </p>
+            <?php }else if($course->format == "topics" ){ ?>
+            <p>
+                <label class="LargeLabel_Width TextRegular_Right" for="section"><?php  print_string('topicformat', 'voiceemail') ?></label>
+                <select name="section" id="section">
+                    <?php echo getListOfTopics($course,$sectionId); ?>
+                </select> 
+            </p>  
+            <?php } ?>  
+             <p>     
+                 <label class="LargeLabel_Width TextRegular_Right" for="menuvisible"><?php echo get_string('visibletostudents','voiceemail'); ?></label>
+                 <?php
+                    unset($choices);
+                    $choices[1] = get_string('show');
+                    $choices[0] = get_string('hide');
+                    choose_from_menu($choices, 'visible', $visible, '', '', 0, false, $hiddensection);
+                 ?>
+             </p>
+             <p>
+                <span class="LargeLabel_Width TextRegular_Right"><?php echo get_string('recipients_email','voiceemail'); ?></span>
+                <input type="radio" checked="true" name="recipients_email" id="recipients_email_instructors" value="instructors"
+                    "<?php echo ($recipients=="instructors") ? 'checked=true' : '';?>">
+                <label class="TextRegular" for="recipients_email_instructors"><?php echo get_string('instructors','voiceemail'); ?></label>
+                <input type="radio" id="recipients_email_students" name="recipients_email" value="students"
+                    "<?php echo ($recipients=="students") ? 'checked=true' : '';?>">
+                <label class="TextRegular" for="recipients_email_students"><?php echo get_string('students','voiceemail'); ?></label>
+                <input type="radio" id="recipients_email_all" name="recipients_email" value="all"
+                    "<?php echo ($recipients=="all") ? 'checked=true' : '';?>">
+                    
+                             
+                <label class="TextRegular" for="recipients_email_all"><?php echo get_string('all','voiceemail'); ?></label>
+             </p>
+             <p>
+                <span class="LargeLabel_Width TextRegular_Right"><?php echo get_string('pre_filled_subject','voiceemail'); ?></span>  
+                <input type="radio" id="pre_filled_subject_no" name="pre_filled_subject" value="false" onclick="enableSubject(true)"
+                    <?php echo ($prefilledSubject=='') ? 'checked' : '';?>>
+                <label class="TextRegular" for="pre_filled_subject_no"><?php echo get_string('no','voiceemail'); ?></label>
+                <input type="radio" id="pre_filled_subject_yes" name="pre_filled_subject" value="true" onclick="enableSubject(false)"
+                    <?php echo ($prefilledSubject!='') ? 'checked' : '';?>>
+                <label class="TextRegular" for="pre_filled_subject_yes"><?php echo get_string('yes','voiceemail'); ?></label>
+                <input type="text" id="subject" name="subject" value="<?php echo $prefilledSubject;?>"
+                    "<?php echo ($prefilledSubject=="") ? 'disabled=true' : '';?>">
+             </p>
+             <p>
+                <span class="LargeLabel_Width TextRegular_Right" ><?php echo get_string('reply_link','voiceemail'); ?></span>
+                <input type="radio" id="reply_link_no" name="reply_link" value="false" 
+                    <?php echo ($replyLink=='false') ? 'checked' : ''; ?>>
+                <label class="TextRegular" for="reply_link_no"><?php echo get_string('no','voiceemail'); ?></label>
+                <input type="radio" id="reply_link_yes" name="reply_link" value="true"  
+                    <?php echo ($replyLink=='true') ? 'checked' : '';?>>
+                 <label class="TextRegular" for="reply_link_yes"><?php echo get_string('yes','voiceemail'); ?></label>
+               
+             </p> 
+             <p>
+                <label class="LargeLabel_Width TextRegular_Right" for="audio_format"><?php echo get_string('audio_quality','voiceemail'); ?></label>
+  
+                <select id="audio_format" name="audio_format">
+                    <option value="spx_8_q3" <?php echo $audioQualityArray['spx_8_q3'];?>>
+                        <?php echo get_string('basicquality','voiceemail');?>
+                    </option>
+                    <option value="spx_16_q4" <?php echo $audioQualityArray['spx_16_q4'];?>>
+                        <?php echo get_string('standardquality','voiceemail');?>
+                    </option>
+                    <option value="spx_16_q6" <?php echo $audioQualityArray['spx_16_q6'];?>>
+                        <?php echo get_string('goodquality','voiceemail');?>
+                    </option>
+                    <option value="spx_32_q8" <?php echo $audioQualityArray['spx_32_q8'];?>>
+                        <?php echo get_string('superiorquality','voiceemail');?>
+                    </option>
+                 </select>
+             </p>
+             <p>
+                <label class="LargeLabel_Width TextRegular_Right" for="max_length"><?php echo get_string('max_length','voiceemail'); ?></label>
+                <select id="max_length" name="max_length">
+                    <option value="15" <?php echo $maxLengthArray['15'];?>>
+                        15 s
+                    </option>
+                    <option value="30" <?php echo $maxLengthArray['30'];?>>
+                        30 s
+                    </option>
+                    <option value="60" <?php echo $maxLengthArray['60'];?>>
+                        1 min
+                    </option>
+                    <option value="180" <?php echo $maxLengthArray['180'];?>>
+                        3 min
+                    </option>
+                    <option value="300" <?php echo $maxLengthArray['300'];?>>
+                        5 min
+                    </option>
+                    <option value="600" <?php echo $maxLengthArray['600'];?>>
+                        10 min
+                    </option>
+                    <option value="1200" <?php echo $maxLengthArray['1200'];?>>
+                        20 min
+                    </option>
+                </select>
+             </p>    
+             <p>
+                <div align=right style="float:left;width:200px;">
+                    <input  type="checkbox" value="true" id="calendar_event" name="calendar_event" onclick=hideCalendarEvent("check")  <?php echo $checked." ".$disabledCheckbox ?>>
+                    <label class="TextRegular" for="calendar_event"><?php  echo get_string ('add_calendar', 'voiceemail') ?></label>
+                </div>
+                <span id="calendar" style="visibility:<?php echo $cal_visibility;?>;padding-left:15px">  
+                    <?php 
+                    if($course->format == "weeks" || $course->format == "weekscss"){?>
+                                           
+                        <select  id="start_day" name= "start_day" onchange="change()">
+                            <?php
+                                for($i=0;$i<7;$i++){    
+                                    if($event === false && $i==0 || $event && date('w',$event->timestart)==date('w',$i*86400+$course->startdate))
+                                    {   
+                                        echo  "<option value=".($i*86400)." selected>".get_string("day".date('w',$i*86400+$course->startdate),"voiceemail")."</option>"; 
+                                    }
+                                    else
+                                    {
+                                        echo  "<option value=".($i*86400).">".get_string("day".date('w',(($i*86400)+$course->startdate)),"voiceemail")."</option>";    
+                                    }
+                                }
+                               ?>
+                        </select> 
+                        <span id="comment_date" class="TextRegular"><?php echo $stringDate;?></span>                   
+                     <?php
+                     }
+                     else if($course->format == "topics" || $course->format == "social" || $course->format == "site")
+                     {?> 
+                                        
+                         <select  id="start_month" name="start_month">
+                            <?php
+                                for($i=1;$i<=12;$i++){    
+                                    if($event === false &&  $i==date('m') || $event && date('m',$event->timestart) == $i)
+                                        echo  "<option value=".$i." selected>".get_string("month".$i,"voiceemail")."</option>"; 
+                                    else
+                                        echo  "<option value=".$i.">".get_string("month".$i,"voiceemail")."</option>"; 
+                                }
+                            ?>
+                         </select> 
+                         <select  id="start_day" name="start_day">
+                            <?php
+                                for($i=1;$i<=31;$i++){    
+                                    if($event === false &&  $i==date('d') || $event && date('d',$event->timestart)==$i)
+                                        echo  "<option value=".$i." selected>".sprintf( "%02d", $i )."</option>"; 
+                                    else
+                                        echo  "<option value=".$i.">".sprintf( "%02d", $i )."</option>";                       
+                                }
+                            ?>
+                         </select>
+                         <select  id="start_year" name="start_year">
+                            <?php
+                                for($i=date('Y');$i<=date('Y')+10;$i++){    
+                                    if($event === false &&  $i==date('Y') || $event && date('Y',$event->timestart)==$i)
+                                        echo  "<option value=".$i." selected>".$i."</option>"; 
+                                    else
+                                        echo  "<option value=".$i.">".$i."</option>";                   
+                                }
+                            ?>
+                         </select> 
+                                            
+                        <?php }?> 
+                                    
+                                    
+                        <select id="start_hr" name="start_hr">
+                            <?php
+                                for($i=1;$i<=24;$i++){    
+                                    if($event === false && $i==8 || $event && date('G',$event->timestart)==$i)
+                                        echo  "<option value=".$i." selected>".date("h A",mktime($i, 1, 1, 1, 1,2007))."</option>"; 
+                                    else 
+                                        echo  "<option value=".$i.">".date("h A",mktime($i, 1, 1, 1, 1,2007))."</option>"; 
+                                 }   
+                            ?>
+                        </select>
+                        <select id="start_min" name="start_min">
+                            <?php
+                                for($i=0;$i<60;$i=$i+5){    
+                                    if($event!=false && date('i',$event->timestart)==$i)
+                                        echo  "<option value=".$i." selected>".sprintf( "%02d", $i )."</option>"; 
+                                    else
+                                        echo  "<option value=".$i.">".sprintf( "%02d", $i )."</option>";         
+                                 }
+                            ?>
+                        </select> 
+                    </span>
+             </p>
+            <div id="calendar_extra"  style="visibility:<?php echo $cal_visibility;?>">
+                <p>
+                    <label class="LargeLabel_Width TextRegular_Right" for="duration_hr"><?php echo get_string('duration_calendar','voiceemail')?></label>
+                    <select id="duration_hr" name="duration_hr">
+                    <?php
+                        for( $i=0; $i<24; $i++ )
+                        {    
+                            if( $event!=false && intval( abs($event->timeduration/3600) ) == $i )   
+                            {
+                                echo  "<option value=".$i." selected>".sprintf( "%02d", $i )."</option>"; 
+                            }
+                            else
+                            { 
+                                echo  "<option value=".$i.">".sprintf( "%02d", $i )."</option>";                                   
+                            }
+                        }       
+                    ?>
+                    </select>
+                    <span class="TextRegular">hr</span>
+                    <select id="duration_min" name="duration_min">
+                    <?php
+                        for($i=0;$i<=60;$i=$i+10)
+                        {    
+                            if ($event!=false && ( ($event->timeduration%3600)/60 ) == $i )   
+                            {
+                                echo  "<option value=".$i." selected>".sprintf( "%02d", $i )."</option>"; 
+                            }                                    
+                            else 
+                            {
+                                echo  "<option value=".$i.">".sprintf( "%02d", $i )."</option>"; 
+                            }
+                        }
+                    ?>
+                    </select>
+                    <span class="TextRegular">min</span>
+                </p>
+                <p>
+                    <label class="LargeLabel_Width TextRegular_Right" for="description"><?php echo get_string('description_calendar', 'voiceemail')?></label>           
+                    <textarea id="description" name="description" rows="4" cols="30"><?php echo $description; ?></textarea>
+                </p>        
+            </div>
+            <div align="center" style="border-top:1px solid; background-color:#F0F0F0;width:700px;height:25px">
+                <ul class="regular_btn_list" style="float:right;padding-top:2px">
+                     <li>
+                        <a href="<?php echo $CFG->wwwroot;?>/course/view.php?id=<?php p($course_id)?>"  class="regular_btn">
+                            <span>Cancel</span>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="#" <?php echo $disabled;?> id="submit_button_back" onclick="validate('0');" class="regular_btn<?php echo $isButtonDisabled;?>">
+                            <span><?php echo $textSaveAndBackButton;?></span>
+                        </a>
+                     </li>
+                     <li>
+                        <a href="#" <?php echo $disabled;?> id="submit_button" onclick="validate('1');" class="regular_btn<?php echo $isButtonDisabled;?>">
+                            <span><?php echo $textSaveButton;?></span>
+                        </a>
+                     </li>
+                 </ul>                      
+            </div>
+      
+            <!-- These hidden variables are always the same -->
+            <input type="hidden" name="course" value="<?php p($form->course) ?>"> 
+            <input type="hidden" name="sesskey" value="<?php p($form->sesskey) ?>"> 
+            <input type="hidden" name="coursemodule" value="<?php p($form->coursemodule) ?>"> 
+            <input type="hidden" name="module" value="<?php p($form->module) ?>"> 
+            <input type="hidden" name="modulename" value="<?php p($form->modulename) ?>"> 
+            <input type="hidden" name="instance" value="<?php p($form->instance) ?>"> 
+            <input type="hidden" name="mode" value="<?php p($form->mode) ?>">
+            <input type="hidden" name="course_format" value="<?php p($course->format) ?>">
+            <input type="hidden" value="" name="isfirst" id="isfirst">
+            <input type="hidden" value="<?php echo $eventDate;?>" name="calendar_start" id="calendar_start">
+            <?php if(isset($resource_id)){ ?>
+                <input type="hidden" value="<?php echo $resource_id?>" name="rid" id="rid">
+            <?php } ?>
+    </form>
+</div>
+
+<div id="hiddenDiv" class="opac">
+        <!--[if lte IE 6.5]><iframe width="0px" height="0px"></iframe><![endif]-->
+</div>
+
+
+<div class="wimba_box" id="error" style="width:350px;z-index:150;display:none;position:absolute;left: 38%; top: 25%;">
+     <div class="wimba_boxTop">
+        <div class="wimbaBoxTopDiv">
+                <span class="wimba_boxTopTitle"  style="width:300px;">Error         
+                </span>    
+                <span title="close" class="wimba_close_box" onclick="$('newPopup').hide();$('error').hide();return false;">Close</span>     
+                
+                <p class="wimba_boxText" style="padding:20px"><?php echo get_string("problem_vt",'voiceemail');?>
+                </p> 
+             
+                <p style="height:20px;padding-top:10px;padding-left:20px">
+                   <a href="<?php echo $CFG->wwwroot;?>/course/view.php?id=<?php p($course_id)?>" style="margin-left:70px;"  class="regular_btn"><span style="width:110px">Ok</span></a>
+                </p>
+                <div style="clear: both; display:block; height:0px;"><h:outputText value="&#160;"/></div>
+        </div>
+    </div>
+    <div class="wimba_boxBottom">
+        <div>
+        </div> 
+    </div>
+</div>
+
+<?php if(!empty($error)){?>
+<script>
+        $("hiddenDiv").style.height=document.documentElement.clientHeight
+        $("hiddenDiv").style.width=document.documentElement.clientWidth
+        $("error").style.display="block";
+        $("hiddenDiv").style.display="block";
+        var allSelect =  document.getElementsByTagName("select");
+        for( i=0;i<allSelect.length;i++)
+        {
+            allSelect[i].style.visibility="hidden";
+        }
+</script>
+<?php } ?>
+

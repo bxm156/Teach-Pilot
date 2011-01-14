@@ -1,0 +1,41 @@
+<?php
+    if (!isset($CFG->udutu_frameheight)) {
+        $CFG->udutu_frameheight = '500';
+    }
+    if (!isset($CFG->udutu_framewidth)) {
+        $CFG->udutu_framewidth = '100%';
+    }
+    
+?>
+
+<form method="post" action="module.php" id="form">
+<div>
+<input type="hidden" name="sesskey" value="<?php echo $USER->sesskey ?>" />
+
+<table cellpadding="9" cellspacing="0" >
+<tr valign="top">
+    <td align="right">udutu_framewidth:</td>
+    <td>
+        <input type="text" name="udutu_framewidth" value="<?php echo $CFG->udutu_framewidth ?>" size="5" />
+    </td>
+    <td>
+        <?php print_string("framewidth", "udutu") ?>
+    </td>
+</tr>
+<tr valign="top">
+    <td align="right">udutu_frameheight:</td>
+    <td>
+        <input type="text" name="udutu_frameheight" value="<?php echo $CFG->udutu_frameheight ?>" size="5" />
+    </td>
+    <td>
+        <?php print_string("frameheight", "udutu") ?>
+    </td>
+</tr>
+<tr>
+    <td colspan="3" align="center">
+        <input type="submit" value="<?php print_string("savechanges") ?>" />
+    </td>
+</tr>
+</table>
+</div>
+</form>

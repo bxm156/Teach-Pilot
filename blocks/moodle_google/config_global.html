@@ -1,0 +1,84 @@
+<!--//* Moodle Google - Moogle block version 2007101509 Global Configuration.
+* 
+* Developer: Yajuvendrasinh V Mahida <yaju_mahida@yahoo.com>
+* 
+* This block is free software. you can redistribute it and/or modify it.
+*                                                                        -->
+
+<center><table cellpadding="13" cellspacing="0">         
+
+<!-- ********************** The following code is for Google's Ajax Search API Key **********************  -->
+
+<tr valign="top">
+    <td  ALIGN="center"><b><u><?php print_string("global_config_title", "block_moodle_google") ?></u></b> &nbsp;<a title="Help with The Google Ajax Search API Key (new window)" href="help.php?module=moodle_google_help&amp;file=gc_google_api_key.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=gc_google_api_key.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars=1,resizable=1,width=950,height=700,', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+</tr>
+
+<TR>
+<TD ALIGN="center">
+    <input name="block" type="hidden" value="<?php echo intval($_REQUEST['block']); ?>" />
+    <input name="block_moodle_google_api_key" type="text" size="104" value="<?php 
+    if(!empty($CFG->block_moodle_google_api_key)) {
+        p($CFG->block_moodle_google_api_key);
+    } ?>" />
+    </td>
+</tr>
+
+
+<!-- ********************** End of code for Google's Ajax Search API Key **********************  -->
+
+
+<!--  ********************** Code for Login Require Check Box **********************  -->
+
+<tr valign="top">
+    <td align="center"><b><u><?php print_string('login_require', 'block_moodle_google'); ?></u></b>
+    
+    <input name="login_require" type="hidden"  value="0" />
+    <b>:</b> <input name="login_require" type="checkbox" id="login_require" <?php if(!empty($CFG->login_require)) echo 'checked="checked"'; ?> /> &nbsp;<a title="Help with  Is Authenticated Login Essential to Use this Block ? (new window)" href="help.php?module=moodle_google_help&amp;file=gc_authnticated_login.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=gc_authnticated_login.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars=1,resizable=1,width=900,height=475', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+</tr>
+
+
+
+<!-- ********************** End of code for for Login Require Check Box **********************  -->  
+
+
+
+<!--  ********************** Code for Availibility of Block to Guest User **********************  -->
+
+<tr valign="top">
+    <td align="center"><b><u><?php print_string('guest_avail_block', 'block_moodle_google'); ?></u></b>
+    
+    <input name="guest_avail_block" type="hidden"  value="0" />
+    <b>:</b> <input name="guest_avail_block" type="checkbox" id="guest_avail_block" <?php if(!empty($CFG->guest_avail_block)) echo 'checked="checked"'; ?> /> &nbsp;<a title="Help with Do not avail this Block to Guest (new window)" href="help.php?module=moodle_google_help&amp;file=gc_guest_login.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=gc_guest_login.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars=1,resizable=1,width=700,height=475', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+</tr>
+
+
+<!-- ********************** End of code for Availibility of Block to Guest User **********************  -->  
+
+<!--  ********************** Code for Hide/Show Logo **********************  -->
+
+<tr valign="top">
+    <td align="center"><b><u><?php print_string('block_logo', 'block_moodle_google'); ?></u></b>
+    
+    <input name="block_logo" type="hidden"  value="0" />
+    <b>:</b> <input name="block_logo" type="checkbox" id="block_logo" <?php if(!empty($CFG->block_logo)) echo 'checked="checked"'; ?> /> &nbsp;<a title="Help with Hide the Logo in the Block (new window)" href="help.php?module=moodle_google_help&amp;file=gc_hide_logo.html&amp;forcelang=" onclick="this.target='popup'; return openpopup('/help.php?module=moodle_google_help&amp;file=gc_hide_logo.html&amp;forcelang=', 'popup', 'menubar=0,location=0,scrollbars,resizable,width=700,height=800', 0);"><img class="iconhelp" alt="Help" src=" <?php echo $CFG->pixpath?>/help.gif" /></a></td>
+</tr>
+
+
+<!-- ********************** End of code for Hide/Show Logo  **********************  -->  
+ 
+  <tr><td>  </td></tr>
+ 
+<!-- ********************** Code for Save Changes Submit Button ********************** -->  
+<tr>
+    <td align="center"><input type="submit" value="<?php print_string("savechanges")?>" />
+    <INPUT TYPE="button" VALUE="Get Google API Key" ONCLICK="window.open('http://code.google.com/apis/ajaxsearch/signup.html');"></td>                                                         
+</tr>
+<!-- ********************** End of code for Save Changes Submit Button **********************  -->
+
+</table></center>
+                                                                
+
+
+
+
+
